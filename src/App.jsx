@@ -126,7 +126,7 @@ function App() {
       {/* HEADER */}
       <div className="header">
         <div className="header-icon">🏢</div>
-        <h1>Absensi Karyawan JNN</h1>
+        <h1>Absensi JNN Laundry</h1>
         <p>Sistem absensi digital dengan verifikasi foto & lokasi</p>
         <div className="header-time">
           🕐 {currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
