@@ -1,12 +1,14 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import * as XLSX from 'xlsx';
 import Webcam from 'react-webcam';
 import './App.css';
 
 function App() {
   const [nama, setNama] = useState('');
   const [status, setStatus] = useState('Hadir');
-  const [riwayatAbsen, setRiwayatAbsen] = useState([]);
+  const [riwayatAbsen, setRiwayatAbsen] = useState(() => {
+    const saved = localStorage.getItem('riwayatAbsen');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [foto, setFoto] = useState(null);
   const [lokasi, setLokasi] = useState('Mencari lokasi...');
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +21,10 @@ function App() {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('riwayatAbsen', JSON.stringify(riwayatAbsen));
+  }, [riwayatAbsen]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -97,15 +103,6 @@ function App() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const downloadExcel = () => {
-    if (riwayatAbsen.length === 0) return alert("Belum ada data!");
-    const dataUntukExcel = riwayatAbsen.map(({ Foto, ...sisa }) => sisa);
-    const worksheet = XLSX.utils.json_to_sheet(dataUntukExcel);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Absensi");
-    XLSX.writeFile(workbook, "Data_Absensi_JNN.xlsx");
   };
 
   const formatLokasi = (loc) => {
@@ -227,9 +224,6 @@ function App() {
             📋 Riwayat Hari Ini
             <span className="history-count">{riwayatAbsen.length}</span>
           </div>
-          <button onClick={downloadExcel} className="btn-excel">
-            📥 Unduh Excel
-          </button>
         </div>
 
         <div className="table-wrap">
